@@ -1,9 +1,41 @@
 let config = {}
 
 function controlLabel(div, label, control) {
-  const wrapper = createP(label + ":")
-  wrapper.child(control)
-  div.child(wrapper)
+  const wrapper = createDiv();
+  const labelText = createSpan(label + ":");
+  const valueText = createSpan(control.value());
+
+  // Update value text when slider changes
+  control.input(() => {
+    valueText.html(control.value());
+  });
+
+  // Add the label, slider, and value text to the wrapper
+  wrapper.child(labelText);
+  wrapper.child(control);
+  wrapper.child(valueText);
+
+  div.child(wrapper);
+}
+
+function saveValues() {
+  const values = {
+    mainCircleRadius: config.mainCircleRadius.value(),
+    circleThickness: config.circleThickness.value(),
+    innerOuterOffset: config.innerOuterOffset.value(),
+    innerCircleCount: config.innerCircleCount.value(),
+    outerCircleCount: config.outerCircleCount.value(),
+    verticalLineCount: config.verticalLineCount.value(),
+    lineLengthInward: config.lineLengthInward.value(),
+    lineLengthOutward: config.lineLengthOutward.value(),
+    lineThickness: config.lineThickness.value(),
+    extraRotation: config.extraRotation.value(),
+    lineColor: config.lineColor,
+  }
+  if (window.localStorage) {
+    localStorage.setItem("controls", JSON.stringify(values))
+  }
+  console.log(values);
 }
 
 function setup() {
@@ -13,7 +45,7 @@ function setup() {
     innerOuterOffset: createSlider(0, 100, 30), // Distance between helper circles
     innerCircleCount: createSlider(0, 10, 2), // Number of inner helper circles
     outerCircleCount: createSlider(0, 10, 2), // Number of outer helper circles
-    lineCount: createSlider(0, 200, 96), // Number of lines around the circle
+    verticalLineCount: createSlider(0, 200, 96), // Number of lines around the circle
     lineLengthInward: createSlider(0, 500, 50), // Line length inward from the circle
     lineLengthOutward: createSlider(0, 500, 50), // Line length outward from the circle
     lineThickness: createSlider(0, 10, 2), // Thickness of the lines
@@ -34,18 +66,19 @@ function setup() {
   controlsDiv.style('top', '0');
   controlsDiv.style('left', '0');
   controlsDiv.style('border', '1px solid gray');
-  controlLabel(controlsDiv, "mainCircleRadius", config.mainCircleRadius)
-  controlLabel(controlsDiv, "circleThickness", config.circleThickness)
-  controlLabel(controlsDiv, "innerOuterOffset", config.innerOuterOffset)
-  controlLabel(controlsDiv, "innerCircleCount", config.innerCircleCount)
-  controlLabel(controlsDiv, "outerCircleCount", config.outerCircleCount)
-  controlLabel(controlsDiv, "lineCount", config.lineCount)
-  controlLabel(controlsDiv, "lineLengthInward", config.lineLengthInward)
-  controlLabel(controlsDiv, "lineLengthOutward", config.lineLengthOutward)
-  controlLabel(controlsDiv, "lineThickness", config.lineThickness)
-  controlLabel(controlsDiv, "extraRotation", config.extraRotation)
-  const save = createButton("Save")
-  controlsDiv.child(save)
+  controlLabel(controlsDiv, "Baseline Radius", config.mainCircleRadius)
+  controlLabel(controlsDiv, "Baseline Thickness", config.circleThickness)
+  controlLabel(controlsDiv, "Helper Lines offset", config.innerOuterOffset)
+  controlLabel(controlsDiv, "Helper Lines Inner Count", config.innerCircleCount)
+  controlLabel(controlsDiv, "Helper Lines Outer Count", config.outerCircleCount)
+  controlLabel(controlsDiv, "Vertical Line Count", config.verticalLineCount)
+  controlLabel(controlsDiv, "Vertical Line Length Inward", config.lineLengthInward)
+  controlLabel(controlsDiv, "Vertical Line Length Outward", config.lineLengthOutward)
+  controlLabel(controlsDiv, "Vertical Line Thickness", config.lineThickness)
+  controlLabel(controlsDiv, "Vertical Line Rotation", config.extraRotation)
+  const saveButton = createButton("Save")
+  saveButton.mousePressed(saveValues);
+  controlsDiv.child(saveButton)
 }
 
 function draw() {
@@ -54,7 +87,7 @@ function draw() {
   const innerOuterOffset = config.innerOuterOffset.value()
   const innerCircleCount = config.innerCircleCount.value()
   const outerCircleCount = config.outerCircleCount.value()
-  const lineCount = config.lineCount.value()
+  const verticalLineCount = config.verticalLineCount.value()
   const lineLengthInward = config.lineLengthInward.value()
   const lineLengthOutward = config.lineLengthOutward.value()
   const lineThickness = config.lineThickness.value()
@@ -81,8 +114,8 @@ function draw() {
   }
 
   // Draw lines starting from the main circle's edge
-  let angleStep = 360 / lineCount;
-  for (let i = 0; i < lineCount; i++) {
+  let angleStep = 360 / verticalLineCount;
+  for (let i = 0; i < verticalLineCount; i++) {
     // Calculate the starting angle of the line
     let angle = i * angleStep;
 
