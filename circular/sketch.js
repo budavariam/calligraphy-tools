@@ -1,21 +1,21 @@
 let config = {}
 
 function controlLabel(div, label, control) {
-  const wrapper = createDiv();
-  const labelText = createSpan(label + ":");
-  const valueText = createSpan(control.value());
+  const wrapper = createDiv()
+  const labelText = createSpan(label + ":")
+  const valueText = createSpan(control.value())
 
   // Update value text when slider changes
   control.input(() => {
-    valueText.html(control.value());
-  });
+    valueText.html(control.value())
+  })
 
   // Add the label, slider, and value text to the wrapper
-  wrapper.child(labelText);
-  wrapper.child(control);
-  wrapper.child(valueText);
+  wrapper.child(labelText)
+  wrapper.child(control)
+  wrapper.child(valueText)
 
-  div.child(wrapper);
+  div.child(wrapper)
 }
 
 function saveValues() {
@@ -35,7 +35,26 @@ function saveValues() {
   if (window.localStorage) {
     localStorage.setItem("controls", JSON.stringify(values))
   }
-  console.log(values);
+  console.log(values)
+}
+
+// Function to load values from localStorage if available
+function loadValues() {
+  const savedValues = JSON.parse(localStorage.getItem("controls"))
+  if (savedValues) {
+    // Set the sliders to the saved values if available
+    config.mainCircleRadius.value(savedValues.mainCircleRadius)
+    config.circleThickness.value(savedValues.circleThickness)
+    config.innerOuterOffset.value(savedValues.innerOuterOffset)
+    config.innerCircleCount.value(savedValues.innerCircleCount)
+    config.outerCircleCount.value(savedValues.outerCircleCount)
+    config.verticalLineCount.value(savedValues.verticalLineCount)
+    config.lineLengthInward.value(savedValues.lineLengthInward)
+    config.lineLengthOutward.value(savedValues.lineLengthOutward)
+    config.lineThickness.value(savedValues.lineThickness)
+    config.extraRotation.value(savedValues.extraRotation)
+    config.lineColor = savedValues.lineColor
+  }
 }
 
 function setup() {
@@ -51,21 +70,22 @@ function setup() {
     lineThickness: createSlider(0, 10, 2), // Thickness of the lines
     extraRotation: createSlider(0, 360, 40), // Additional rotation for each line (degrees)
     lineColor: [130, 130, 130], // Fixed color for the lines
-  };
+  }
+  loadValues()
 
-  createCanvas(windowWidth, windowHeight);
-  angleMode(DEGREES);
-  noFill();
+  createCanvas(windowWidth, windowHeight)
+  angleMode(DEGREES)
+  noFill()
 
-  // input = createInput('Type your name');
-  let controlsDiv = createDiv('Controls');
-  controlsDiv.style('position', 'absolute');
-  controlsDiv.style('border-radius', '5px');
-  controlsDiv.style('margin', '5px');
-  controlsDiv.style('padding', '5px');
-  controlsDiv.style('top', '0');
-  controlsDiv.style('left', '0');
-  controlsDiv.style('border', '1px solid gray');
+  let controlsDiv = createDiv('Controls')
+  controlsDiv.style('position', 'absolute')
+  controlsDiv.style('border-radius', '5px')
+  controlsDiv.style('margin', '5px')
+  controlsDiv.style('padding', '5px')
+  controlsDiv.style('top', '0')
+  controlsDiv.style('left', '0')
+  controlsDiv.style('border', '1px solid gray')
+
   controlLabel(controlsDiv, "Baseline Radius", config.mainCircleRadius)
   controlLabel(controlsDiv, "Baseline Thickness", config.circleThickness)
   controlLabel(controlsDiv, "Helper Lines offset", config.innerOuterOffset)
@@ -76,8 +96,9 @@ function setup() {
   controlLabel(controlsDiv, "Vertical Line Length Outward", config.lineLengthOutward)
   controlLabel(controlsDiv, "Vertical Line Thickness", config.lineThickness)
   controlLabel(controlsDiv, "Vertical Line Rotation", config.extraRotation)
+
   const saveButton = createButton("Save")
-  saveButton.mousePressed(saveValues);
+  saveButton.mousePressed(saveValues)
   controlsDiv.child(saveButton)
 }
 
@@ -92,56 +113,53 @@ function draw() {
   const lineLengthOutward = config.lineLengthOutward.value()
   const lineThickness = config.lineThickness.value()
   const extraRotation = config.extraRotation.value()
-  background(255);
-  translate(width / 2, height / 2);
+  background(255)
+  translate(width / 2, height / 2)
 
   // Draw the main circle
-  strokeWeight(circleThickness);
-  ellipse(0, 0, mainCircleRadius * 2);
+  strokeWeight(circleThickness)
+  ellipse(0, 0, mainCircleRadius * 2)
 
   // Draw inner helper circles
   for (let i = 1; i <= innerCircleCount; i++) {
-    let radius = mainCircleRadius - i * innerOuterOffset;
-    strokeWeight(1);
-    ellipse(0, 0, radius * 2);
+    let radius = mainCircleRadius - i * innerOuterOffset
+    strokeWeight(1)
+    ellipse(0, 0, radius * 2)
   }
 
   // Draw outer helper circles
   for (let i = 1; i <= outerCircleCount; i++) {
-    let radius = mainCircleRadius + i * innerOuterOffset;
-    strokeWeight(1);
-    ellipse(0, 0, radius * 2);
+    let radius = mainCircleRadius + i * innerOuterOffset
+    strokeWeight(1)
+    ellipse(0, 0, radius * 2)
   }
 
   // Draw lines starting from the main circle's edge
-  let angleStep = 360 / verticalLineCount;
+  let angleStep = 360 / verticalLineCount
   for (let i = 0; i < verticalLineCount; i++) {
     // Calculate the starting angle of the line
-    let angle = i * angleStep;
+    let angle = i * angleStep
 
     // Calculate the start point on the circle
-    let x1 = cos(angle) * mainCircleRadius;
-    let y1 = sin(angle) * mainCircleRadius;
+    let x1 = cos(angle) * mainCircleRadius
+    let y1 = sin(angle) * mainCircleRadius
 
     // Calculate the line's directions with the extra rotation
-    let adjustedAngle = angle + extraRotation;
+    let adjustedAngle = angle + extraRotation
 
-    let x2 = x1 + cos(adjustedAngle) * lineLengthOutward;
-    let y2 = y1 + sin(adjustedAngle) * lineLengthOutward;
-    let x3 = x1 - cos(adjustedAngle) * lineLengthInward;
-    let y3 = y1 - sin(adjustedAngle) * lineLengthInward;
+    let x2 = x1 + cos(adjustedAngle) * lineLengthOutward
+    let y2 = y1 + sin(adjustedAngle) * lineLengthOutward
+    let x3 = x1 - cos(adjustedAngle) * lineLengthInward
+    let y3 = y1 - sin(adjustedAngle) * lineLengthInward
 
     // Draw the line
-    stroke(config.lineColor);
-    strokeWeight(lineThickness);
-    line(x3, y3, x2, y2);
+    stroke(config.lineColor)
+    strokeWeight(lineThickness)
+    line(x3, y3, x2, y2)
   }
-  // nameP.html(input.value());
-  // text(input.value(), 10, 20);
 }
-
 
 // Always resize the canvas to fill the browser window.
 function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
+  resizeCanvas(windowWidth, windowHeight)
 }
