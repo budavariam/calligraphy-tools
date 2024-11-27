@@ -31,6 +31,8 @@ function saveValues() {
     lineThickness: config.lineThickness.value(),
     extraRotation: config.extraRotation.value(),
     lineColor: config.lineColor,
+    centerX: config.centerX.value(),
+    centerY: config.centerY.value(),
   }
   if (window.localStorage) {
     localStorage.setItem("controls", JSON.stringify(values))
@@ -54,6 +56,8 @@ function loadValues() {
     config.lineThickness.value(savedValues.lineThickness)
     config.extraRotation.value(savedValues.extraRotation)
     config.lineColor = savedValues.lineColor
+    config.centerX.value(savedValues.centerX)
+    config.centerY.value(savedValues.centerY)
   }
 }
 
@@ -70,6 +74,8 @@ function setup() {
     lineThickness: createSlider(0, 10, 2), // Thickness of the lines
     extraRotation: createSlider(0, 360, 40), // Additional rotation for each line (degrees)
     lineColor: [130, 130, 130], // Fixed color for the lines
+    centerX: createSlider(-windowWidth / 2, windowWidth / 2, 0), // X position of the circle's center
+    centerY: createSlider(-windowHeight / 2, windowHeight / 2, 0), // Y position of the circle's center
   }
   loadValues()
 
@@ -96,6 +102,8 @@ function setup() {
   controlLabel(controlsDiv, "Vertical Line Length Outward", config.lineLengthOutward)
   controlLabel(controlsDiv, "Vertical Line Thickness", config.lineThickness)
   controlLabel(controlsDiv, "Vertical Line Rotation", config.extraRotation)
+  controlLabel(controlsDiv, "Center X", config.centerX)
+  controlLabel(controlsDiv, "Center Y", config.centerY)
 
   const saveButton = createButton("Save")
   saveButton.mousePressed(saveValues)
@@ -113,8 +121,11 @@ function draw() {
   const lineLengthOutward = config.lineLengthOutward.value()
   const lineThickness = config.lineThickness.value()
   const extraRotation = config.extraRotation.value()
+  const centerX = config.centerX.value()
+  const centerY = config.centerY.value()
+
   background(255)
-  translate(width / 2, height / 2)
+  translate(width / 2 + centerX, height / 2 + centerY) // Translate the canvas to the center X and Y
 
   // Draw the main circle
   strokeWeight(circleThickness)
