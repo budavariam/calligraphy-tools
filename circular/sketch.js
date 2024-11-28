@@ -30,6 +30,7 @@ function saveValues() {
     lineLengthOutward: config.lineLengthOutward.value(),
     lineThickness: config.lineThickness.value(),
     extraRotation: config.extraRotation.value(),
+    startRotation: config.startRotation.value(),
     lineColor: config.lineColor,
     centerX: config.centerX.value(),
     centerY: config.centerY.value(),
@@ -40,11 +41,9 @@ function saveValues() {
   console.log(values)
 }
 
-// Function to load values from localStorage if available
 function loadValues() {
   const savedValues = JSON.parse(localStorage.getItem("controls"))
   if (savedValues) {
-    // Set the sliders to the saved values if available
     config.mainCircleRadius.value(savedValues.mainCircleRadius)
     config.circleThickness.value(savedValues.circleThickness)
     config.innerOuterOffset.value(savedValues.innerOuterOffset)
@@ -55,6 +54,7 @@ function loadValues() {
     config.lineLengthOutward.value(savedValues.lineLengthOutward)
     config.lineThickness.value(savedValues.lineThickness)
     config.extraRotation.value(savedValues.extraRotation)
+    config.startRotation.value(savedValues.startRotation)
     config.lineColor = savedValues.lineColor
     config.centerX.value(savedValues.centerX)
     config.centerY.value(savedValues.centerY)
@@ -63,19 +63,20 @@ function loadValues() {
 
 function setup() {
   config = {
-    mainCircleRadius: createSlider(10, 500, 150), // Radius of the main circle
-    circleThickness: createSlider(1, 20, 2), // Thickness of the main circle
-    innerOuterOffset: createSlider(0, 100, 30), // Distance between helper circles
-    innerCircleCount: createSlider(0, 10, 2), // Number of inner helper circles
-    outerCircleCount: createSlider(0, 10, 2), // Number of outer helper circles
-    verticalLineCount: createSlider(0, 200, 96), // Number of lines around the circle
-    lineLengthInward: createSlider(0, 500, 50), // Line length inward from the circle
-    lineLengthOutward: createSlider(0, 500, 50), // Line length outward from the circle
-    lineThickness: createSlider(0, 10, 2), // Thickness of the lines
-    extraRotation: createSlider(0, 360, 40), // Additional rotation for each line (degrees)
-    lineColor: [130, 130, 130], // Fixed color for the lines
-    centerX: createSlider(-windowWidth / 2, windowWidth / 2, 0), // X position of the circle's center
-    centerY: createSlider(-windowHeight / 2, windowHeight / 2, 0), // Y position of the circle's center
+    mainCircleRadius: createSlider(10, 500, 150),
+    circleThickness: createSlider(1, 20, 2),
+    innerOuterOffset: createSlider(0, 100, 30),
+    innerCircleCount: createSlider(0, 10, 2),
+    outerCircleCount: createSlider(0, 10, 2),
+    verticalLineCount: createSlider(0, 200, 96),
+    lineLengthInward: createSlider(0, 500, 50),
+    lineLengthOutward: createSlider(0, 500, 50),
+    lineThickness: createSlider(0, 10, 2),
+    extraRotation: createSlider(0, 360, 40),
+    startRotation: createSlider(0, 720, 0),
+    lineColor: [130, 130, 130],
+    centerX: createSlider(-windowWidth / 2, windowWidth / 2, 0),
+    centerY: createSlider(-windowHeight / 2, windowHeight / 2, 0),
   }
   loadValues()
 
@@ -102,6 +103,7 @@ function setup() {
   controlLabel(controlsDiv, "Vertical Line Length Outward", config.lineLengthOutward)
   controlLabel(controlsDiv, "Vertical Line Thickness", config.lineThickness)
   controlLabel(controlsDiv, "Vertical Line Rotation", config.extraRotation)
+  controlLabel(controlsDiv, "Starting Rotation", config.startRotation) // New label
   controlLabel(controlsDiv, "Center X", config.centerX)
   controlLabel(controlsDiv, "Center Y", config.centerY)
 
@@ -121,56 +123,47 @@ function draw() {
   const lineLengthOutward = config.lineLengthOutward.value()
   const lineThickness = config.lineThickness.value()
   const extraRotation = config.extraRotation.value()
+  const startRotation = config.startRotation.value()
   const centerX = config.centerX.value()
   const centerY = config.centerY.value()
 
   background(255)
-  translate(width / 2 + centerX, height / 2 + centerY) // Translate the canvas to the center X and Y
+  translate(width / 2 + centerX, height / 2 + centerY)
 
-  // Draw the main circle
   strokeWeight(circleThickness)
   ellipse(0, 0, mainCircleRadius * 2)
 
-  // Draw inner helper circles
   for (let i = 1; i <= innerCircleCount; i++) {
     let radius = mainCircleRadius - i * innerOuterOffset
     strokeWeight(1)
     ellipse(0, 0, radius * 2)
   }
 
-  // Draw outer helper circles
   for (let i = 1; i <= outerCircleCount; i++) {
     let radius = mainCircleRadius + i * innerOuterOffset
     strokeWeight(1)
     ellipse(0, 0, radius * 2)
   }
 
-  // Draw lines starting from the main circle's edge
   let angleStep = 360 / verticalLineCount
   for (let i = 0; i < verticalLineCount; i++) {
-    // Calculate the starting angle of the line
-    let angle = i * angleStep
+    let angle = i * angleStep + startRotation
 
-    // Calculate the start point on the circle
     let x1 = cos(angle) * mainCircleRadius
     let y1 = sin(angle) * mainCircleRadius
 
-    // Calculate the line's directions with the extra rotation
     let adjustedAngle = angle + extraRotation
-
     let x2 = x1 + cos(adjustedAngle) * lineLengthOutward
     let y2 = y1 + sin(adjustedAngle) * lineLengthOutward
     let x3 = x1 - cos(adjustedAngle) * lineLengthInward
     let y3 = y1 - sin(adjustedAngle) * lineLengthInward
 
-    // Draw the line
     stroke(config.lineColor)
     strokeWeight(lineThickness)
     line(x3, y3, x2, y2)
   }
 }
 
-// Always resize the canvas to fill the browser window.
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight)
 }
