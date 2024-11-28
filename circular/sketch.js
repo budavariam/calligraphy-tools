@@ -103,7 +103,7 @@ function setup() {
   controlLabel(controlsDiv, "Vertical Line Length Outward", config.lineLengthOutward)
   controlLabel(controlsDiv, "Vertical Line Thickness", config.lineThickness)
   controlLabel(controlsDiv, "Vertical Line Rotation", config.extraRotation)
-  controlLabel(controlsDiv, "Starting Rotation", config.startRotation) // New label
+  controlLabel(controlsDiv, "Vertical Line Offset", config.startRotation) // New label
   controlLabel(controlsDiv, "Center X", config.centerX)
   controlLabel(controlsDiv, "Center Y", config.centerY)
 
